@@ -8,19 +8,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # Load the Excel file
-excel_file = "C:\\project\\test.xlsx"
+excel_file = "C:/Users/NICKSON/OneDrive/Desktop/pato.xlsx"
 data = pd.read_excel(excel_file)
 
-# Set up the WebDriver
-service = Service('C:\\chromedriver\\chromedriver.exe')
+# Sets up the WebDriver
+service = Service('C:/chromedriver/chromedriver.exe')
 driver = webdriver.Chrome(service=service)
 
-# Log in to the Django admin
+# Logs in to the Django admin
 admin_login_url = "http://102.133.146.249/admin/login/?next=/admin/"
 driver.get(admin_login_url)
 
 # Login credentials
-email = "gabrielplus2001@gmail.com"
+email = "simiyunickson1@gmail.com"
 password = "@sph123S"
 
 # Wait for the email input field to be present before interacting
@@ -36,15 +36,23 @@ password_input.send_keys(password)
 password_input.send_keys(Keys.RETURN)
 
 # Wait for the login process to complete
-time.sleep(3)
+WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, 'content-main'))
+)
 
 # Loop through the rows in the Excel data
 for index, row in data.iterrows():
+    # Skip already processed rows
+    if row.get('processed') == 'yes':
+        continue
+
     # Navigate to the Django admin 'add' page for your model
     driver.get("http://102.133.146.249/admin/youthApp/youth/add/")
 
-    # Wait for the page to load
-    time.sleep(2)
+    # Wait for the form to load
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, 'first_name'))
+    )
 
     # Fill in the form using the data from the Excel row
     driver.find_element(By.NAME, 'first_name').send_keys(row['first_name'])
@@ -69,7 +77,9 @@ for index, row in data.iterrows():
         
         # Type 'Kenyan' and press Enter
         search_input.send_keys('Kenyan')
-        time.sleep(1)  # Wait for options to load
+        WebDriverWait(driver, 2).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, '.select2-results__option'))
+        )
         search_input.send_keys(Keys.ENTER)
 
     except Exception as e:
@@ -77,16 +87,24 @@ for index, row in data.iterrows():
         continue
 
     # Select the preferred mode of communication (default is 'sms')
-    preferred_mode_select = driver.find_element(By.NAME, 'preferred_mode_of_communication')
+    preferred_mode_select = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, 'preferred_mode_of_communication'))
+    )
     preferred_mode_select.send_keys('sms')
 
     # Submit the form
     driver.find_element(By.NAME, '_save').click()
 
-    # Wait a bit before proceeding to the next entry
-    time.sleep(3)
+    # Wait for the form to submit and the next page to load
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, 'content-main'))
+    )
+
+    # Mark the current row as processed and save the Excel file
+    data.at[index, 'processed'] = 'yes'
+    data.to_excel(excel_file, index=False)  # Saves the updated file
 
 # Close the browser when done
 driver.quit()
-
+# Then prints
 print("Data entry completed!")
