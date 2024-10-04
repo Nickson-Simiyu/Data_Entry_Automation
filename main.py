@@ -8,8 +8,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # Load the Excel file
-excel_file = "C:/Users/NICKSON/OneDrive/Desktop/pato.xlsx"
-data = pd.read_excel(excel_file)
+excel_file = "C:/Users/NICKSON/OneDrive/Desktop/filternum2.csv"
+data = pd.read_csv(excel_file)
 
 # Sets up the WebDriver
 service = Service('C:/chromedriver/chromedriver.exe')
@@ -56,7 +56,6 @@ for index, row in data.iterrows():
 
     # Fill in the form using the data from the Excel row
     driver.find_element(By.NAME, 'first_name').send_keys(row['first_name'])
-    driver.find_element(By.NAME, 'middle_name').send_keys(row['middle_name'])
     driver.find_element(By.NAME, 'last_name').send_keys(row['last_name'])
     driver.find_element(By.NAME, 'gender').send_keys(row['gender'])
     driver.find_element(By.NAME, 'year_of_birth').send_keys(str(row['year_of_birth']))
@@ -102,7 +101,7 @@ for index, row in data.iterrows():
 
     # Mark the current row as processed and save the Excel file
     data.at[index, 'processed'] = 'yes'
-    data.to_excel(excel_file, index=False)  # Saves the updated file
+    data.to_csv(excel_file, index=False)  # Saves the updated file
 
 # Close the browser when done
 driver.quit()
