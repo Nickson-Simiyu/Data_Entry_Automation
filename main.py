@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # Load the Excel file
-excel_file = "C:/Users/NICKSON/OneDrive/Desktop/filternum2.csv"
+excel_file = "filternum2.csv"
 data = pd.read_csv(excel_file)
 
 # Sets up the WebDriver
@@ -16,12 +16,12 @@ service = Service('C:/chromedriver/chromedriver.exe')
 driver = webdriver.Chrome(service=service)
 
 # Logs in to the Django admin
-admin_login_url = "http://102.133.146.249/admin/login/?next=/admin/"
+admin_login_url = "admin/login/?next=/admin/"
 driver.get(admin_login_url)
 
 # Login credentials
-email = "simiyunickson1@gmail.com"
-password = "@sph123S"
+email = ""
+password = ""
 
 # Wait for the email input field to be present before interacting
 email_input = WebDriverWait(driver, 10).until(
@@ -47,7 +47,7 @@ for index, row in data.iterrows():
         continue
 
     # Navigate to the Django admin 'add' page for your model
-    driver.get("http://102.133.146.249/admin/youthApp/youth/add/")
+    driver.get("admin/youthApp/youth/add/")
 
     # Wait for the form to load
     WebDriverWait(driver, 10).until(
